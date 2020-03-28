@@ -7,10 +7,9 @@ output_outer = [4, 3, 7, 5, 8, 2]
 
 
 # Generate polynomial hypersurface model.
-# return list of lists of coefficients for each variable
-# last element of each list will be the same (intercept)
 # data is a list of lists of data points
 # output is array of identifiers
+# returns a function with the model built in
 def overfit(data, output):
     n_coefficients = len(data)
     dimensions = len(data[0])
@@ -20,8 +19,16 @@ def overfit(data, output):
     n_exponents = np.zeros(dimensions, dtype=np.int)
     n_exponents = n_exponents + min_exponent
     n_one_more_exponent = n_coefficients - 1 - dimensions * min_exponent
-    for i in range(n_one_more_exponent):
-        n_exponents[i] = n_exponents[i] + 1
+    for index in range(n_one_more_exponent):
+        n_exponents[index] = n_exponents[index] + 1
+
+    # exponents for each variable, for each term
+    model_exponents = np.zeros((dimensions, n_coefficients), dtype=np.int)
+    for axis in range(dimensions):
+        leading_zeros = sum(n_exponents[:axis])
+        for term in range(leading_zeros, leading_zeros+n_exponents[axis]):
+            model_exponents[axis, term] = (leading_zeros +
+                                           n_exponents[axis] - term)
 
     matrix = []
     for point in data:
@@ -31,8 +38,22 @@ def overfit(data, output):
                 row.append(coordinate ** exponent)
         row.append(1)
         matrix.append(row)
+    model_coefficients = np.dot(np.linalg.inv(np.array(matrix)), output)
 
-    return np.dot(np.linalg.inv(np.array(matrix)), output)
+    def model(points):
+        out = 0
+        for a in range(n_coefficients):
+            model_term = 1
+            for b in range(dimensions):
+                model_term = (model_term * points[b] ** model_exponents[b, a])
+            model_term = model_term * model_coefficients[a]
+            out = out + model_term
+
+        return out
+
+    return model
 
 
-print(overfit(data_outer, output_outer))
+m = overfit(data_outer, output_outer)
+for i in data_outer:
+    print(m(i))
