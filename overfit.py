@@ -52,14 +52,15 @@ def overfit(data, output):
     return model
 
 
-# [file_name] ["plot"] [window] or
+# [file_name] ["plot"] [start] [end] [y_start] [y_end] or
 # [file_name] [data1] ... [data_n]
 if __name__ == "__main__":
     import sys
     data_outer, output_outer = import_data(sys.argv[1])
     sys_model = overfit(data_outer, output_outer)
     if sys.argv[2].lower() == "plot":
-        plot(sys_model, sys.argv[3])
+        plot(sys_model, [(int(sys.argv[3]), int(sys.argv[4])),
+                         (int(sys.argv[5]), int(sys.argv[6]))])
     else:
         test_case = []
         for data_index, _ in enumerate(data_outer[0]):
