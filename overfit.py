@@ -1,15 +1,13 @@
 import numpy as np
-
-data_outer = [[1, 2, 6], [2, 6, 8],
-              [3, 4, 8], [7, 9, 0],
-              [5, 6, 3], [6, 5, 6]]
-output_outer = [4, 3, 7, 5, 8, 2]
+from import_data import import_data
+from plot import plot
 
 
 # Generate polynomial hypersurface model.
 # data is a list of lists of data points
 # output is array of identifiers
 # returns a function with the model built in
+# TODO: Consider allowing user input of polynomial structure
 def overfit(data, output):
     n_coefficients = len(data)
     dimensions = len(data[0])
@@ -54,6 +52,16 @@ def overfit(data, output):
     return model
 
 
-m = overfit(data_outer, output_outer)
-for i in data_outer:
-    print(m(i))
+# [file_name] ["plot"] [window] or
+# [file_name] [data1] ... [data_n]
+if __name__ == "__main__":
+    import sys
+    data_outer, output_outer = import_data(sys.argv[1])
+    sys_model = overfit(data_outer, output_outer)
+    if sys.argv[2].lower() == "plot":
+        plot(sys_model, sys.argv[3])
+    else:
+        test_case = []
+        for data_index, _ in enumerate(data_outer[0]):
+            test_case.append(int(sys.argv[data_index + 2]))
+        print('Prediction: %f' % sys_model(test_case))
