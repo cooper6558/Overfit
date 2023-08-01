@@ -14,14 +14,14 @@ def overfit(data, output):
     min_exponent = (n_coefficients - 1) // dimensions
 
     # n_exponents is an array of the number of terms for each variable.
-    n_exponents = np.zeros(dimensions, dtype=np.int)
+    n_exponents = np.zeros(dimensions, dtype=int)
     n_exponents = n_exponents + min_exponent
     n_one_more_exponent = n_coefficients - 1 - dimensions * min_exponent
     for index in range(n_one_more_exponent):
         n_exponents[index] = n_exponents[index] + 1
 
     # exponents for each variable, for each term
-    model_exponents = np.zeros((dimensions, n_coefficients), dtype=np.int)
+    model_exponents = np.zeros((dimensions, n_coefficients), dtype=int)
     for axis in range(dimensions):
         leading_zeros = sum(n_exponents[:axis])
         for term in range(leading_zeros, leading_zeros+n_exponents[axis]):
@@ -64,5 +64,5 @@ if __name__ == "__main__":
     else:
         test_case = []
         for data_index, _ in enumerate(data_outer[0]):
-            test_case.append(int(sys.argv[data_index + 2]))
+            test_case.append(float(sys.argv[data_index + 2]))
         print('Prediction: %f' % sys_model(test_case))
